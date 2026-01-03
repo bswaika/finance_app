@@ -29,12 +29,12 @@ def on_shutdown() -> None:
         db.close()
 
 
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
-app.include_router(transactions.router, prefix="/api/transactions", tags=["transactions"])
-app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
-app.include_router(budgets.router, prefix="/api/budgets", tags=["budgets"])
-app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
+# app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+# app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
+# app.include_router(transactions.router, prefix="/api/transactions", tags=["transactions"])
+# app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
+# app.include_router(budgets.router, prefix="/api/budgets", tags=["budgets"])
+# app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
 
 
 @app.get("/health", tags=["health"])
