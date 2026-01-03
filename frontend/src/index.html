@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Finance App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <h1>Finance App</h1>
+        <nav id="nav" class="app-nav">
+          <button data-view="dashboard">Dashboard</button>
+          <button data-view="accounts">Accounts</button>
+          <button data-view="transactions">Transactions</button>
+          <button id="logout-btn" class="secondary">Logout</button>
+        </nav>
+      </header>
+
+      <main id="main-content">
+        <section id="auth-view" class="view">
+          <h2>Sign In</h2>
+          <form id="login-form">
+            <label>
+              Username
+              <input type="text" name="username" required />
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" required />
+            </label>
+            <button type="submit">Login</button>
+          </form>
+          <p id="auth-error" class="error"></p>
+        </section>
+
+        <section id="dashboard-view" class="view hidden">
+          <h2>Dashboard</h2>
+          <div id="dashboard-summary"></div>
+        </section>
+
+        <section id="accounts-view" class="view hidden">
+          <h2>Accounts</h2>
+          <ul id="accounts-list"></ul>
+        </section>
+
+        <section id="transactions-view" class="view hidden">
+          <h2>Recent Transactions</h2>
+          <ul id="transactions-list"></ul>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Backend API base URL; override in production via environment / index.html rewrite
+      window.API_URL = window.API_URL || "http://localhost:8000";
+    </script>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
+
+

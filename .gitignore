@@ -1,0 +1,64 @@
+# ---- General ----
+.DS_Store
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+eggs/
+.eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.env
+.env.*
+.venv
+venv/
+ENV/
+env/
+
+# ---- Node / Frontend ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.turbo/
+.parcel-cache/
+.cache/
+
+# Build artifacts
+frontend/dist/
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.iml
+
+# ---- OS / Misc ----
+Thumbs.db
+
+
