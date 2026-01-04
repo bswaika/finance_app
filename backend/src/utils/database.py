@@ -35,23 +35,29 @@ def init_db() -> None:
 
     from ..models.user import User
     from ..models.account import Account
+    from ..models.bank_account import BankAccount
     from ..models.category import Category
     from ..models.transaction import Transaction
+    from ..models.transaction_line import TransactionLine
     from ..models.recurring_transaction import RecurringTransaction
     from ..models.budget import Budget
     from ..models.chart_of_accounts import ChartOfAccount
     from ..models.transaction_import import TransactionImport
+    from ..models.custom_report import CustomReport
 
     db.create_tables(
         [
             User,
             Account,
+            BankAccount,
             Category,
             ChartOfAccount,
             Transaction,
+            TransactionLine,
             Budget,
             RecurringTransaction,
             TransactionImport,
+            CustomReport,
         ]
     )
 
