@@ -16,6 +16,7 @@ from ..schemas.transaction import (
     TransactionRead,
     TransactionUpdate,
 )
+from ..services.import_service import import_transactions_from_json
 from ..services.auth_service import get_current_active_user
 
 
@@ -208,5 +209,24 @@ async def delete_transaction(
 
     tx.delete_instance()
     return None
+
+
+@router.post("/import")
+async def import_transactions(
+    payload: dict,
+    current_user: User = Depends(get_current_active_user),
+) -> dict:
+    """
+    Import transactions from JSON or base64-encoded CSV.
+
+    See `import_service.import_transactions_from_json` for payload structure.
+    """
+    ti = import_transactions_from_json(current_user, payload)
+    return {
+        "id": str(ti.id),
+        "status": ti.status,
+        "records_imported": ti.records_imported,
+        "errors": ti.errors,
+    }
 
 
