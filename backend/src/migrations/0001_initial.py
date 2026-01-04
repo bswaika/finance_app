@@ -14,6 +14,7 @@ from src.utils.database import db
 from src.models import (
     User,
     Account,
+    BankAccount,
     Category,
     Transaction,
     RecurringTransaction,
@@ -29,6 +30,7 @@ def run() -> None:
             [
                 User,
                 Account,
+                BankAccount,
                 Category,
                 ChartOfAccount,
                 Transaction,

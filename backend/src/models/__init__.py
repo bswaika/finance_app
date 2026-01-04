@@ -1,5 +1,6 @@
 from .user import User
 from .account import Account
+from .bank_account import BankAccount
 from .category import Category
 from .transaction import Transaction
 from .recurring_transaction import RecurringTransaction
@@ -10,6 +11,7 @@ from .transaction_import import TransactionImport
 __all__ = [
     "User",
     "Account",
+    "BankAccount",
     "Category",
     "Transaction",
     "RecurringTransaction",
