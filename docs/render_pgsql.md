@@ -69,20 +69,24 @@ This guide walks through creating a Render PostgreSQL database suitable for the
    uvicorn src.main:app --reload
    ```
 
-### 5. Attach the database to the backend Render service
+### 5. Attach the database to the backend Render service (Docker)
 
-When you create the backend web service on Render (for the FastAPI app):
+When you create the backend web service on Render (for the FastAPI app), use a
+**Docker** web service:
 
 1. In Render, click **New +** → **Web Service** and connect your Git repo.
-2. Set **Environment** to **Python** and configure:
-   - **Build Command**: `pip install -r backend/requirements.txt`
-   - **Start Command**: `uvicorn backend.src.main:app --host 0.0.0.0 --port $PORT`
-   - **Root Directory**: `backend` (so commands run from `backend/`).
-3. Under **Environment Variables**:
+2. Choose **Docker** as the environment type.
+3. In the service settings:
+   - Set the repo root to the project root (Render will detect `backend/Dockerfile`).
+   - Confirm that `backend/Dockerfile` is the Dockerfile to use.
+4. Under **Environment Variables**:
    - Add `DATABASE_URL` and paste the value from the Postgres instance.
    - Add `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES` as appropriate.
-4. Deploy the service. The backend will connect to the same Render Postgres
-   instance that you used locally.
+5. Deploy the service. Render will:
+   - Build the image using `backend/Dockerfile`.
+   - Start the container using the `CMD` defined there
+     (`uvicorn src.main:app --host 0.0.0.0 --port 8000`).
+   - Connect to the same Render Postgres instance that you used locally.
 
 ### 6. Future migrations
 

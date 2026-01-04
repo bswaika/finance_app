@@ -77,4 +77,23 @@ npm run dev
 
 See `docs/PROJECT_PLAN.md` for a pointer to the detailed project plan.
 
+## Render deployment (Docker backend)
+
+The backend is deployed on Render as a **Docker** web service using
+`backend/Dockerfile`. Render builds the image from that Dockerfile and runs the
+`CMD` defined inside it, so you do **not** configure build or start commands in
+the Render UI.
+
+When creating the backend service:
+
+- Choose **Web Service → Docker**.
+- Point Render at this repository (project root).
+- Ensure it uses `backend/Dockerfile` as the Dockerfile.
+- Configure environment variables:
+  - `DATABASE_URL` (Render Postgres URL)
+  - `SECRET_KEY`
+  - `ALGORITHM`
+  - `ACCESS_TOKEN_EXPIRE_MINUTES`
+
+
 
