@@ -4,35 +4,115 @@
     <meta charset="utf-8" />
     <title>Finance App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Font Awesome Free for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body>
     <div id="app">
-      <header class="app-header">
-        <h1>Finance App</h1>
-        <nav id="nav" class="app-nav">
-          <button data-view="dashboard">Dashboard</button>
-          <button data-view="accounts">Accounts</button>
-          <button data-view="transactions">Transactions</button>
-          <button id="logout-btn" class="secondary">Logout</button>
-        </nav>
-      </header>
+      <div class="app-shell">
+        <button id="sidebar-toggle" class="icon-button floating-toggle hidden">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <aside id="sidebar" class="sidebar hidden">
+          <nav id="nav" class="sidebar-nav">
+            <button class="sidebar-item" data-view="dashboard" data-label="Dashboard">
+              <i class="fa-solid fa-gauge"></i>
+            </button>
+            <button class="sidebar-item" data-view="accounts" data-label="Accounts">
+              <i class="fa-solid fa-wallet"></i>
+            </button>
+            <button class="sidebar-item" data-view="transactions" data-label="Transactions">
+              <i class="fa-solid fa-receipt"></i>
+            </button>
+            <button class="sidebar-item" data-view="categories" data-label="Categories">
+              <i class="fa-solid fa-tags"></i>
+            </button>
+            <button class="sidebar-item" data-view="reports" data-label="Reports">
+              <i class="fa-solid fa-chart-pie"></i>
+            </button>
+            <button class="sidebar-item" data-view="imports" data-label="Imports">
+              <i class="fa-solid fa-file-import"></i>
+            </button>
+          </nav>
+          <div class="sidebar-footer">
+            <button id="user-btn" class="sidebar-item" data-label="Account">
+              <i class="fa-solid fa-user"></i>
+            </button>
+            <div id="user-menu" class="user-menu hidden">
+              <button data-action="profile">Profile</button>
+              <button data-action="logout">Logout</button>
+            </div>
+          </nav>
+        </aside>
 
-      <main id="main-content">
+        <main id="main-content">
         <section id="auth-view" class="view">
-          <h2>Sign In</h2>
-          <form id="login-form">
-            <label>
-              Username
-              <input type="text" name="username" required />
-            </label>
-            <label>
-              Password
-              <input type="password" name="password" required />
-            </label>
-            <button type="submit">Login</button>
-          </form>
-          <p id="auth-error" class="error"></p>
+          <div class="auth-layout">
+            <div class="auth-left">
+              <h2>Sign In</h2>
+              <div class="auth-toggle-switch" role="tablist" aria-label="Authentication mode">
+                <button
+                  type="button"
+                  id="auth-switch-login"
+                  class="auth-switch active"
+                  role="tab"
+                  aria-selected="true"
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  id="auth-switch-signup"
+                  class="auth-switch"
+                  role="tab"
+                  aria-selected="false"
+                >
+                  Sign up
+                </button>
+              </div>
+              <form id="login-form">
+                <label>
+                  Username
+                  <input type="text" name="username" required />
+                </label>
+                <label id="auth-email-label" class="hidden">
+                  Email
+                  <input type="email" name="email" />
+                </label>
+                <label>
+                  Password
+                  <input type="password" name="password" required />
+                </label>
+                <label id="auth-confirm-label" class="hidden">
+                  Confirm Password
+                  <input type="password" name="password_confirm" />
+                </label>
+                <button type="submit">Login</button>
+                <p class="auth-toggle">
+                  <span id="auth-toggle-text">Don’t have an account?</span>
+                  <button type="button" id="auth-toggle-btn">Sign up</button>
+                </p>
+              </form>
+              <p id="auth-error" class="error"></p>
+            </div>
+            <div class="auth-right">
+              <div class="auth-hero">
+                <img src="/assets/landing.jpg" alt="Finance overview illustration" />
+                <div class="auth-hero-overlay">
+                  <div class="auth-hero-title-box">
+                    <h1>Financier</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section id="dashboard-view" class="view hidden">
@@ -42,15 +122,130 @@
 
         <section id="accounts-view" class="view hidden">
           <h2>Accounts</h2>
+          <form id="account-form" class="card">
+            <h3>Create account</h3>
+            <div class="field-row">
+              <label>
+                Name
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                Type
+                <input type="text" name="account_type" placeholder="checking, savings, credit_card" required />
+              </label>
+            </div>
+            <div class="field-row">
+              <label>
+                Initial balance
+                <input type="number" step="0.01" name="balance" value="0" />
+              </label>
+              <label>
+                Currency
+                <input type="text" name="currency" value="USD" />
+              </label>
+            </div>
+            <details class="bank-details">
+              <summary>Bank details (optional)</summary>
+              <div class="field-row">
+                <label>
+                  Bank name
+                  <input type="text" name="bank_name" />
+                </label>
+                <label>
+                  Account number
+                  <input type="text" name="account_number" />
+                </label>
+                <label>
+                  Routing number
+                  <input type="text" name="routing_number" />
+                </label>
+              </div>
+            </details>
+            <button type="submit">Save account</button>
+            <p id="account-form-message" class="message"></p>
+          </form>
+
+          <h3>Existing accounts</h3>
           <ul id="accounts-list"></ul>
         </section>
 
         <section id="transactions-view" class="view hidden">
-          <h2>Recent Transactions</h2>
+          <h2>Transactions</h2>
+
+          <form id="transaction-form" class="card">
+            <h3>Add transaction</h3>
+            <div class="field-row">
+              <label>
+                Account
+                <select name="account_id" id="transaction-account" required></select>
+              </label>
+              <label>
+                Amount
+                <input type="number" step="0.01" name="amount" required />
+              </label>
+              <label>
+                Date
+                <input type="date" name="transaction_date" required />
+              </label>
+            </div>
+            <div class="field-row">
+              <label>
+                Type
+                <select name="transaction_type" required>
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                  <option value="transfer">Transfer</option>
+                </select>
+              </label>
+              <label>
+                Category
+                <select name="category_id" id="transaction-category">
+                  <option value="">Uncategorized</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Description
+              <input type="text" name="description" />
+            </label>
+            <button type="submit">Save transaction</button>
+            <p id="transaction-form-message" class="message"></p>
+          </form>
+
+          <h3>Recent transactions</h3>
           <ul id="transactions-list"></ul>
         </section>
+
+        <section id="categories-view" class="view hidden">
+          <h2>Categories</h2>
+          <form id="category-form" class="card">
+            <h3>Create category</h3>
+            <div class="field-row">
+              <label>
+                Name
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                Type
+                <select name="category_type" required>
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                  <option value="both">Both</option>
+                </select>
+              </label>
+            </div>
+            <button type="submit">Save category</button>
+            <p id="category-form-message" class="message"></p>
+          </form>
+
+          <h3>All categories</h3>
+          <ul id="categories-list"></ul>
+        </section>
       </main>
+      </div>
     </div>
+
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <script>
       // Backend API base URL; override in production via environment / index.html rewrite
