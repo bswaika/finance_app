@@ -9,13 +9,17 @@ from peewee import DoesNotExist
 
 from ..models.account import Account
 from ..models.category import Category
+from ..models.chart_of_accounts import ChartOfAccount
 from ..models.transaction import Transaction
+from ..models.transaction_line import TransactionLine
 from ..models.user import User
 from ..schemas.transaction import (
     TransactionCreate,
     TransactionRead,
     TransactionUpdate,
 )
+from ..schemas.transaction_split import TransactionSplitRead
+from ..services.import_service import import_transactions_from_json
 from ..services.auth_service import get_current_active_user
 
 
@@ -45,19 +49,7 @@ async def list_transactions(
 
     query = query.order_by(Transaction.transaction_date.desc()).limit(limit).offset(offset)
 
-    return [
-        TransactionRead(
-            id=t.id,
-            account_id=t.account_id,
-            category_id=t.category_id,
-            amount=float(t.amount),
-            description=t.description,
-            transaction_date=t.transaction_date,
-            transaction_type=t.transaction_type,
-            transfer_to_account_id=t.transfer_to_account_id,
-        )
-        for t in query
-    ]
+    return [_tx_to_read(t) for t in query]
 
 
 @router.post("/", response_model=TransactionRead, status_code=status.HTTP_201_CREATED)
@@ -99,17 +91,11 @@ async def create_transaction(
         transfer_to_account=transfer_to_account,
         is_recurring=False,
     )
+    # Optional splits
+    if tx_in.splits:
+        _replace_transaction_splits(tx, tx_in.splits, current_user)
 
-    return TransactionRead(
-        id=tx.id,
-        account_id=tx.account_id,
-        category_id=tx.category_id,
-        amount=float(tx.amount),
-        description=tx.description,
-        transaction_date=tx.transaction_date,
-        transaction_type=tx.transaction_type,
-        transfer_to_account_id=tx.transfer_to_account_id,
-    )
+    return _tx_to_read(tx)
 
 
 @router.get("/{transaction_id}", response_model=TransactionRead)
@@ -122,16 +108,7 @@ async def get_transaction(
     except DoesNotExist:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
 
-    return TransactionRead(
-        id=tx.id,
-        account_id=tx.account_id,
-        category_id=tx.category_id,
-        amount=float(tx.amount),
-        description=tx.description,
-        transaction_date=tx.transaction_date,
-        transaction_type=tx.transaction_type,
-        transfer_to_account_id=tx.transfer_to_account_id,
-    )
+    return _tx_to_read(tx)
 
 
 @router.put("/{transaction_id}", response_model=TransactionRead)
@@ -180,20 +157,16 @@ async def update_transaction(
             tx.transfer_to_account = transfer_to
         update_data.pop("transfer_to_account_id")
 
+    splits = update_data.pop("splits", None)
+
     for field, value in update_data.items():
         setattr(tx, field, value)
     tx.save()
 
-    return TransactionRead(
-        id=tx.id,
-        account_id=tx.account_id,
-        category_id=tx.category_id,
-        amount=float(tx.amount),
-        description=tx.description,
-        transaction_date=tx.transaction_date,
-        transaction_type=tx.transaction_type,
-        transfer_to_account_id=tx.transfer_to_account_id,
-    )
+    if splits is not None:
+        _replace_transaction_splits(tx, splits, current_user)
+
+    return _tx_to_read(tx)
 
 
 @router.delete("/{transaction_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -206,7 +179,89 @@ async def delete_transaction(
     except DoesNotExist:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
 
+    # Delete splits first (CASCADE would also handle this, but we are explicit)
+    TransactionLine.delete().where(TransactionLine.transaction == tx).execute()
     tx.delete_instance()
     return None
+
+
+@router.post("/import")
+async def import_transactions(
+    payload: dict,
+    current_user: User = Depends(get_current_active_user),
+) -> dict:
+    """
+    Import transactions from JSON or base64-encoded CSV.
+
+    See `import_service.import_transactions_from_json` for payload structure.
+    """
+    ti = import_transactions_from_json(current_user, payload)
+    return {
+        "id": str(ti.id),
+        "status": ti.status,
+        "records_imported": ti.records_imported,
+        "errors": ti.errors,
+    }
+
+
+def _tx_to_read(tx: Transaction) -> TransactionRead:
+    # Load splits
+    lines = list(TransactionLine.select().where(TransactionLine.transaction == tx))
+    splits: list[TransactionSplitRead] | None = None
+    if lines:
+        splits = []
+        for line in lines:
+            splits.append(
+                TransactionSplitRead(
+                    id=line.id,
+                    chart_of_account_id=line.chart_of_account.id,
+                    amount=float(line.amount),
+                    memo=line.memo,
+                )
+            )
+
+    return TransactionRead(
+        id=tx.id,
+        account_id=tx.account_id,
+        category_id=tx.category_id,
+        amount=float(tx.amount),
+        description=tx.description,
+        transaction_date=tx.transaction_date,
+        transaction_type=tx.transaction_type,
+        transfer_to_account_id=tx.transfer_to_account_id,
+        splits=splits,
+    )
+
+
+def _replace_transaction_splits(
+    tx: Transaction,
+    splits_in: list[dict],
+    current_user: User,
+) -> None:
+    # Delete existing lines
+    TransactionLine.delete().where(TransactionLine.transaction == tx).execute()
+
+    if not splits_in:
+        return
+
+    # Validate ChartOfAccount ownership and recreate lines
+    for idx, split in enumerate(splits_in):
+        coa_id = split["chart_of_account_id"]
+        try:
+            coa = ChartOfAccount.get(
+                ChartOfAccount.id == coa_id, ChartOfAccount.user == current_user
+            )
+        except DoesNotExist:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid chart_of_account_id at index {idx}",
+            )
+
+        TransactionLine.create(
+            transaction=tx,
+            chart_of_account=coa,
+            amount=split["amount"],
+            memo=split.get("memo"),
+        )
 
 

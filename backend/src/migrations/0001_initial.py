@@ -17,10 +17,12 @@ from src.models import (
     BankAccount,
     Category,
     Transaction,
+    TransactionLine,
     RecurringTransaction,
     Budget,
     ChartOfAccount,
     TransactionImport,
+    CustomReport,
 )
 
 
@@ -34,9 +36,11 @@ def run() -> None:
                 Category,
                 ChartOfAccount,
                 Transaction,
+                TransactionLine,
                 RecurringTransaction,
                 Budget,
                 TransactionImport,
+                CustomReport,
             ]
         )
 

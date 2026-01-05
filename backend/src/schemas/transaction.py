@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from .transaction_split import TransactionSplitCreate, TransactionSplitRead
+
 
 class TransactionBase(BaseModel):
     account_id: UUID
@@ -17,7 +19,7 @@ class TransactionBase(BaseModel):
 
 
 class TransactionCreate(TransactionBase):
-    pass
+    splits: list[TransactionSplitCreate] | None = None
 
 
 class TransactionUpdate(BaseModel):
@@ -27,9 +29,11 @@ class TransactionUpdate(BaseModel):
     transaction_date: date | None = None
     transaction_type: str | None = None
     transfer_to_account_id: UUID | None = None
+    splits: list[TransactionSplitCreate] | None = None
 
 
 class TransactionRead(TransactionBase):
     id: UUID
+    splits: list[TransactionSplitRead] | None = None
 
 

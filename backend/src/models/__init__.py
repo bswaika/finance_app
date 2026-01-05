@@ -6,7 +6,9 @@ from .transaction import Transaction
 from .recurring_transaction import RecurringTransaction
 from .budget import Budget
 from .chart_of_accounts import ChartOfAccount
+from .transaction_line import TransactionLine
 from .transaction_import import TransactionImport
+from .custom_report import CustomReport
 
 __all__ = [
     "User",
@@ -17,7 +19,9 @@ __all__ = [
     "RecurringTransaction",
     "Budget",
     "ChartOfAccount",
+    "TransactionLine",
     "TransactionImport",
+    "CustomReport",
 ]
 
 

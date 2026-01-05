@@ -35,6 +35,13 @@ export function login(username, password) {
   });
 }
 
+export function register(payload) {
+  return request("/api/auth/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 export function fetchMe() {
   return request("/api/auth/me");
 }
@@ -43,10 +50,34 @@ export function fetchAccounts() {
   return request("/api/accounts");
 }
 
-export function fetchRecentTransactions(params = {}) {
+export function createAccount(payload) {
+  return request("/api/accounts", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function fetchTransactions(params = {}) {
   const query = new URLSearchParams(params);
   const suffix = query.toString() ? `?${query.toString()}` : "";
   return request(`/api/transactions${suffix}`);
 }
 
+export function createTransaction(payload) {
+  return request("/api/transactions", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function fetchCategories() {
+  return request("/api/categories");
+}
+
+export function createCategory(payload) {
+  return request("/api/categories", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
